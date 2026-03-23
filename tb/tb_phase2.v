@@ -41,23 +41,6 @@ module tb_phase2;
   localparam [4:0] SEL_LO    = 5'd22;
   localparam [4:0] SEL_ZLOW  = 5'd23;
 
-  localparam [4:0] OP_LD     = 5'd16;
-  localparam [4:0] OP_LDI    = 5'd17;
-  localparam [4:0] OP_ST     = 5'd18;
-  localparam [4:0] OP_ADDI   = 5'd19;
-  localparam [4:0] OP_ANDI   = 5'd20;
-  localparam [4:0] OP_ORI    = 5'd21;
-  localparam [4:0] OP_BRZR   = 5'd22;
-  localparam [4:0] OP_BRNZ   = 5'd23;
-  localparam [4:0] OP_BRPL   = 5'd24;
-  localparam [4:0] OP_BRMI   = 5'd25;
-  localparam [4:0] OP_JR     = 5'd26;
-  localparam [4:0] OP_JAL    = 5'd27;
-  localparam [4:0] OP_MFHI   = 5'd28;
-  localparam [4:0] OP_MFLO   = 5'd29;
-  localparam [4:0] OP_IN     = 5'd30;
-  localparam [4:0] OP_OUT    = 5'd31;
-
   integer failures;
 
   datapath_logic #(
@@ -471,10 +454,14 @@ module tb_phase2;
   endtask
 
   task exec_in;
+    input [31:0] input_value;
     begin
       clear_ctrl();
+      InPort_data = input_value;
+      check_eq(InPort_data, input_value, "in stimulus before load");
       InPortLoad = 1'b1;
       tick;
+      check_eq(InPort_q_dbg, input_value, "input port latched");
 
       clear_ctrl();
       InPortout = 1'b1;
@@ -511,107 +498,107 @@ module tb_phase2;
 
     // 3.1 ld/ldi
     load_reg(2, 32'h00000057);
-    fetch_instr(mk_ir_imm(OP_LD, 4'd7, 4'd0, 19'h00065));
+    fetch_instr(mk_ir_imm(`OP_LD, 4'd7, 4'd0, 19'h00065));
     exec_ld();
     check_eq(R7_q, 32'h00000084, "ld R7, 0x65");
 
-    fetch_instr(mk_ir_imm(OP_LD, 4'd0, 4'd2, 19'h00072));
+    fetch_instr(mk_ir_imm(`OP_LD, 4'd0, 4'd2, 19'h00072));
     exec_ld();
     check_eq(R0_q, 32'h0000002B, "ld R0, 0x72(R2)");
 
-    fetch_instr(mk_ir_imm(OP_LDI, 4'd7, 4'd0, 19'h00065));
+    fetch_instr(mk_ir_imm(`OP_LDI, 4'd7, 4'd0, 19'h00065));
     exec_ldi();
     check_eq(R7_q, 32'h00000065, "ldi R7, 0x65");
 
-    fetch_instr(mk_ir_imm(OP_LDI, 4'd0, 4'd2, 19'h00072));
+    fetch_instr(mk_ir_imm(`OP_LDI, 4'd0, 4'd2, 19'h00072));
     exec_ldi();
     check_eq(R0_q, 32'h000000C9, "ldi R0, 0x72(R2)");
 
     // 3.2 st
     load_reg(6, 32'h00000063);
-    fetch_instr(mk_ir_imm(OP_ST, 4'd6, 4'd0, 19'h0001F));
+    fetch_instr(mk_ir_imm(`OP_ST, 4'd6, 4'd0, 19'h0001F));
     exec_st();
     check_mem(9'h01F, 32'h00000063, "st 0x1F, R6");
 
-    fetch_instr(mk_ir_imm(OP_ST, 4'd6, 4'd6, 19'h0001F));
+    fetch_instr(mk_ir_imm(`OP_ST, 4'd6, 4'd6, 19'h0001F));
     exec_st();
     check_mem(9'h082, 32'h00000063, "st 0x1F(R6), R6");
 
     // 3.3 addi/andi/ori
     load_reg(4, 32'h00000020);
-    fetch_instr(mk_ir_imm(OP_ADDI, 4'd7, 4'd4, 19'h7FFF7)); // -9
+    fetch_instr(mk_ir_imm(`OP_ADDI, 4'd7, 4'd4, 19'h7FFF7)); // -9
     exec_imm_alu(`ADDop);
     check_eq(R7_q, 32'h00000017, "addi R7, R4, -9");
 
     load_reg(4, 32'h000000F3);
-    fetch_instr(mk_ir_imm(OP_ANDI, 4'd7, 4'd4, 19'h00071));
+    fetch_instr(mk_ir_imm(`OP_ANDI, 4'd7, 4'd4, 19'h00071));
     exec_imm_alu(`ANDop);
     check_eq(R7_q, 32'h00000071, "andi R7, R4, 0x71");
 
-    fetch_instr(mk_ir_imm(OP_ORI, 4'd7, 4'd4, 19'h00071));
+    fetch_instr(mk_ir_imm(`OP_ORI, 4'd7, 4'd4, 19'h00071));
     exec_imm_alu(`ORop);
     check_eq(R7_q, 32'h000000F3, "ori R7, R4, 0x71");
 
     // 3.4 branches (taken + not taken)
     set_pc_value(32'h00000010);
     load_reg(3, 32'h00000000);
-    fetch_instr(mk_ir_branch(OP_BRZR, 4'd3, 2'b00, 19'd48));
+    fetch_instr(mk_ir_branch(`OP_BR, 4'd3, 2'b00, 19'd48));
     exec_branch();
     check_eq(PC_q_dbg, 32'h00000041, "brzr taken");
 
     set_pc_value(32'h00000010);
     load_reg(3, 32'h00000001);
-    fetch_instr(mk_ir_branch(OP_BRZR, 4'd3, 2'b00, 19'd48));
+    fetch_instr(mk_ir_branch(`OP_BR, 4'd3, 2'b00, 19'd48));
     exec_branch();
     check_eq(PC_q_dbg, 32'h00000011, "brzr not taken");
 
     set_pc_value(32'h00000010);
     load_reg(3, 32'h00000001);
-    fetch_instr(mk_ir_branch(OP_BRNZ, 4'd3, 2'b01, 19'd48));
+    fetch_instr(mk_ir_branch(`OP_BR, 4'd3, 2'b01, 19'd48));
     exec_branch();
     check_eq(PC_q_dbg, 32'h00000041, "brnz taken");
 
     set_pc_value(32'h00000010);
     load_reg(3, 32'h00000000);
-    fetch_instr(mk_ir_branch(OP_BRNZ, 4'd3, 2'b01, 19'd48));
+    fetch_instr(mk_ir_branch(`OP_BR, 4'd3, 2'b01, 19'd48));
     exec_branch();
     check_eq(PC_q_dbg, 32'h00000011, "brnz not taken");
 
     set_pc_value(32'h00000010);
     load_reg(3, 32'h00000005);
-    fetch_instr(mk_ir_branch(OP_BRPL, 4'd3, 2'b10, 19'd48));
+    fetch_instr(mk_ir_branch(`OP_BR, 4'd3, 2'b10, 19'd48));
     exec_branch();
     check_eq(PC_q_dbg, 32'h00000041, "brpl taken");
 
     set_pc_value(32'h00000010);
     load_reg(3, 32'hFFFFFFFF);
-    fetch_instr(mk_ir_branch(OP_BRPL, 4'd3, 2'b10, 19'd48));
+    fetch_instr(mk_ir_branch(`OP_BR, 4'd3, 2'b10, 19'd48));
     exec_branch();
     check_eq(PC_q_dbg, 32'h00000011, "brpl not taken");
 
     set_pc_value(32'h00000010);
     load_reg(3, 32'hFFFFFFFF);
-    fetch_instr(mk_ir_branch(OP_BRMI, 4'd3, 2'b11, 19'd48));
+    fetch_instr(mk_ir_branch(`OP_BR, 4'd3, 2'b11, 19'd48));
     exec_branch();
     check_eq(PC_q_dbg, 32'h00000041, "brmi taken");
 
     set_pc_value(32'h00000010);
     load_reg(3, 32'h00000005);
-    fetch_instr(mk_ir_branch(OP_BRMI, 4'd3, 2'b11, 19'd48));
+    fetch_instr(mk_ir_branch(`OP_BR, 4'd3, 2'b11, 19'd48));
     exec_branch();
     check_eq(PC_q_dbg, 32'h00000011, "brmi not taken");
 
     // 3.5 jr / jal
     set_pc_value(32'h00000010);
     load_reg(12, 32'h000000FF);
-    fetch_instr(mk_ir_rrr(OP_JR, 4'd12, 4'd0, 4'd0));
+    fetch_instr(mk_ir_rrr(`OP_JR, 4'd12, 4'd0, 4'd0));
     exec_jr();
     check_eq(PC_q_dbg, 32'h000000FF, "jr R12");
 
     set_pc_value(32'h00000020);
     load_reg(4, 32'h000000AA);
     load_reg(12, 32'h00000000);
-    fetch_instr(mk_ir_rrr(OP_JAL, 4'd4, 4'd0, 4'd0));
+    fetch_instr(mk_ir_rrr(`OP_JAL, 4'd4, 4'd0, 4'd0));
     exec_jal();
     check_eq(R12_q, 32'h00000021, "jal saved return address in R12");
     check_eq(PC_q_dbg, 32'h000000AA, "jal jump target");
@@ -619,23 +606,22 @@ module tb_phase2;
     // 3.6 mfhi / mflo
     load_hi(32'h12345678);
     load_lo(32'h89ABCDEF);
-    fetch_instr(mk_ir_rrr(OP_MFHI, 4'd5, 4'd0, 4'd0));
+    fetch_instr(mk_ir_rrr(`OP_MFHI, 4'd5, 4'd0, 4'd0));
     exec_mfhi();
     check_eq(R5_q, 32'h12345678, "mfhi R5");
 
-    fetch_instr(mk_ir_rrr(OP_MFLO, 4'd1, 4'd0, 4'd0));
+    fetch_instr(mk_ir_rrr(`OP_MFLO, 4'd1, 4'd0, 4'd0));
     exec_mflo();
     check_eq(R1_q, 32'h89ABCDEF, "mflo R1");
 
     // 3.7 out / in
     load_reg(7, 32'hDEADBEEF);
-    fetch_instr(mk_ir_rrr(OP_OUT, 4'd7, 4'd0, 4'd0));
+    fetch_instr(mk_ir_rrr(`OP_OUT, 4'd7, 4'd0, 4'd0));
     exec_out();
     check_eq(OutPort_q_dbg, 32'hDEADBEEF, "out R7");
 
-    InPort_data = 32'hCAFEBABE;
-    fetch_instr(mk_ir_rrr(OP_IN, 4'd5, 4'd0, 4'd0));
-    exec_in();
+    fetch_instr(mk_ir_rrr(`OP_IN, 4'd5, 4'd0, 4'd0));
+    exec_in(32'hCAFEBABE);
     check_eq(R5_q, 32'hCAFEBABE, "in R5");
 
     if (failures == 0) begin

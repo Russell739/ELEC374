@@ -15,4 +15,18 @@
 `define NEGop   4'd12
 `define NOTop   4'd13
 
+`define OP_ADDI  5'd9
+`define OP_ANDI  5'd10
+`define OP_ORI   5'd11
+`define OP_LD    5'd16
+`define OP_LDI   5'd17
+`define OP_ST    5'd18
+`define OP_JAL   5'd19
+`define OP_JR    5'd20
+`define OP_BR    5'd21
+`define OP_IN    5'd22
+`define OP_OUT   5'd23
+`define OP_MFHI  5'd24
+`define OP_MFLO  5'd25
+
 `endif

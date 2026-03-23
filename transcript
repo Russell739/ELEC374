@@ -1,0 +1,76 @@
+# vsim -c phase2lib.tb_phase2 -do "run -all; quit -f" 
+# Start time: 16:10:11 on Mar 22,2026
+# Loading phase2lib.tb_phase2
+# Loading phase2lib.datapath_logic
+# Loading phase2lib.register32
+# Loading phase2lib.alu_logic
+# Loading phase2lib.cla32
+# Loading phase2lib.booth_bit_pair
+# Loading phase2lib.nonrestoring_div32
+# Loading phase2lib.register64
+# Loading phase2lib.select_encode
+# Loading phase2lib.sign_extend_c
+# Loading phase2lib.con_ff_logic
+# Loading phase2lib.io_ports
+# Loading phase2lib.ram512x32
+# Loading phase2lib.bus_mux
+# Loading phase2lib.cla4
+# run -all
+# PASS: init mem[0x65] value=00000084
+# PASS: init mem[0xC9] value=0000002b
+# PASS: init mem[0x1F] value=000000d4
+# PASS: init mem[0x82] value=000000a7
+# PASS: fetch opcode into IR value=83800065
+# PASS: ld R7, 0x65 value=00000084
+# PASS: fetch opcode into IR value=80100072
+# PASS: ld R0, 0x72(R2) value=0000002b
+# PASS: fetch opcode into IR value=8b800065
+# PASS: ldi R7, 0x65 value=00000065
+# PASS: fetch opcode into IR value=88100072
+# PASS: ldi R0, 0x72(R2) value=000000c9
+# PASS: fetch opcode into IR value=9300001f
+# PASS: st 0x1F, R6 value=00000063
+# PASS: fetch opcode into IR value=9330001f
+# PASS: st 0x1F(R6), R6 value=00000063
+# PASS: fetch opcode into IR value=4ba7fff7
+# PASS: addi R7, R4, -9 value=00000017
+# PASS: fetch opcode into IR value=53a00071
+# PASS: andi R7, R4, 0x71 value=00000071
+# PASS: fetch opcode into IR value=5ba00071
+# PASS: ori R7, R4, 0x71 value=000000f3
+# PASS: fetch opcode into IR value=a9800030
+# PASS: brzr taken value=00000041
+# PASS: fetch opcode into IR value=a9800030
+# PASS: brzr not taken value=00000011
+# PASS: fetch opcode into IR value=a9880030
+# PASS: brnz taken value=00000041
+# PASS: fetch opcode into IR value=a9880030
+# PASS: brnz not taken value=00000011
+# PASS: fetch opcode into IR value=a9900030
+# PASS: brpl taken value=00000041
+# PASS: fetch opcode into IR value=a9900030
+# PASS: brpl not taken value=00000011
+# PASS: fetch opcode into IR value=a9980030
+# PASS: brmi taken value=00000041
+# PASS: fetch opcode into IR value=a9980030
+# PASS: brmi not taken value=00000011
+# PASS: fetch opcode into IR value=a6000000
+# PASS: jr R12 value=000000ff
+# PASS: fetch opcode into IR value=9a000000
+# PASS: jal saved return address in R12 value=00000021
+# PASS: jal jump target value=000000aa
+# PASS: fetch opcode into IR value=c2800000
+# PASS: mfhi R5 value=12345678
+# PASS: fetch opcode into IR value=c8800000
+# PASS: mflo R1 value=89abcdef
+# PASS: fetch opcode into IR value=bb800000
+# PASS: out R7 value=deadbeef
+# PASS: fetch opcode into IR value=b2800000
+# PASS: in stimulus before load value=cafebabe
+# PASS: input port latched value=cafebabe
+# PASS: in R5 value=cafebabe
+# PASS PHASE2 SUITE
+# ** Note: $finish    : tb/tb_phase2.v(634)
+#    Time: 2026 ns  Iteration: 0  Instance: /tb_phase2
+# End time: 16:10:12 on Mar 22,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
