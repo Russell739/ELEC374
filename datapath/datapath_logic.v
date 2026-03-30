@@ -61,10 +61,19 @@ module datapath_logic #(
     output  wire [31:0] R4_q,
     output  wire [31:0] R12_q,
     output  wire [31:0] R7_q,
+    output  wire [31:0] R8_q,
+    output  wire [31:0] R9_q,
+    output  wire [31:0] R10_q,
+    output  wire [31:0] R11_q,
+    output  wire [31:0] R13_q,
+    output  wire [31:0] R14_q,
+    output  wire [31:0] R15_q,
     output  wire [31:0] HI_q_dbg,
     output  wire [31:0] LO_q_dbg,
     output  wire [31:0] IR_q_dbg,
     output  wire [31:0] PC_q_dbg,
+    output  wire [31:0] MAR_q_dbg,
+    output  wire [31:0] MDR_q_dbg,
     output  wire [31:0] Y_q,
     output  wire [63:0] Z_q,
 
@@ -106,6 +115,13 @@ module datapath_logic #(
     assign R4_q = R[4];
     assign R12_q = R[12];
     assign R7_q = R[7];
+    assign R8_q = R[8];
+    assign R9_q = R[9];
+    assign R10_q = R[10];
+    assign R11_q = R[11];
+    assign R13_q = R[13];
+    assign R14_q = R[14];
+    assign R15_q = R[15];
 
     // -------- Internal special registers --------
     reg [31:0] PC_q;
@@ -165,6 +181,8 @@ module datapath_logic #(
     assign LO_q_dbg = LO_q;
     assign IR_q_dbg = IR_q;
     assign PC_q_dbg = PC_q;
+    assign MAR_q_dbg = MAR_q;
+    assign MDR_q_dbg = MDR_q;
     assign CON_q_dbg = CON_q;
     assign OutPort_q_dbg = out_port_q;
     assign InPort_q_dbg = in_port_q;
